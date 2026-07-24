@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catch the Invisible AI Cheater</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+
+  <div class="shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Interview Integrity · Zero install · Human review only</p>
+        <h1>Catch the Invisible AI Cheater</h1>
+        <p class="lead">
+          A browser-only demo that turns focus loss, paste behavior, copy behavior, and answer timing into a reviewer-ready risk signal.
+        </p>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-card-label">Live risk</div>
+        <div class="risk-score" id="riskScore">0</div>
+        <div class="risk-pill" id="riskLabel" data-level="clean">Clean</div>
+        <div class="risk-bar">
+          <div class="risk-bar-fill" id="riskBarFill"></div>
+        </div>
+        <div class="hero-card-note" id="sessionIdLabel">Session not started</div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Consent and demo setup</h2>
+          <span class="status" id="sessionState">Waiting for consent</span>
+        </div>
+
+        <p class="muted">
+          This prototype monitors browser behavior only. It never auto-rejects anyone and it stores only evidence needed for review.
+        </p>
+
+        <div class="info-box">
+          <div class="info-title">What this can catch well</div>
+          <ul>
+            <li>Tab switching during answers</li>
+            <li>Paste-driven answers</li>
+            <li>Copy activity</li>
+            <li>Very fast answer bursts</li>
+          </ul>
+        </div>
+
+        <label class="consent-check">
+          <input type="checkbox" id="consentCheckbox" />
+          I consent to demo monitoring for this session.
+        </label>
+
+        <div class="button-row">
+          <button id="startSessionBtn" disabled>Start session</button>
+          <button id="resetBtn" class="ghost" type="button">Reset page</button>
+        </div>
+
+        <p class="hint">
+          Demo tip: answer normally first. Then open another tab or paste text into the answer box to see the score rise.
+        </p>
+      </section>
+
+      <section class="panel candidate-panel">
+        <div class="panel-header">
+          <h2>Candidate session</h2>
+          <span class="status" id="questionState">Idle</span>
+        </div>
+
+        <div class="question-card">
+          <div class="question-top">
+            <span class="question-chip" id="questionCounter">Question 0 / 0</span>
+            <span class="question-chip subtle" id="questionExpected">Expected time: -</span>
+          </div>
+          <div class="question-text" id="questionText">Press Start session to begin.</div>
+          <div class="question-meta" id="questionMeta"></div>
+        </div>
+
+        <form id="answerForm">
+          <label class="answer-label" for="answerInput">Your answer</label>
+          <textarea
+            id="answerInput"
+            rows="8"
+            placeholder="Type your answer here..."
+            disabled
+          ></textarea>
+
+          <div class="button-row">
+            <button id="submitAnswerBtn" type="submit" disabled>Submit answer</button>
+            <button id="nextQuestionBtn" type="button" class="ghost" disabled>Next question</button>
+            <button id="endSessionBtn" type="button" class="ghost" disabled>End session</button>
+          </div>
+        </form>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value" id="metricQuestionTime">00:00</div>
+            <div class="metric-label">Question time</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="metricWords">0</div>
+            <div class="metric-label">Words typed</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="metricFocusLoss">0</div>
+            <div class="metric-label">Focus losses</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="metricVisibility">0</div>
+            <div class="metric-label">Hidden-tab events</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="metricPaste">0</div>
+            <div class="metric-label">Paste events</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="metricTyping">0</div>
+            <div class="metric-label">Chars / min</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel reviewer-panel">
+        <div class="panel-header">
+          <h2>Reviewer dashboard</h2>
+          <div class="button-row compact">
+            <button id="exportBtn" type="button">Export JSON</button>
+          </div>
+        </div>
+
+        <div class="signal-summary">
+          <div class="summary-card">
+            <div class="summary-value" id="summarySignalCount">0</div>
+            <div class="summary-label">Scored signals</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="summaryQuestionCount">0</div>
+            <div class="summary-label">Answered questions</div>
+          </div>
+          <div class="summary-card">
+            <div class="summary-value" id="summaryStatus">Clean</div>
+            <div class="summary-label">Current label</div>
+          </div>
+        </div>
+
+        <div class="coverage-note">
+          <h3>Coverage and limits</h3>
+          <p>
+            Strong at browser behavior signals such as tab switching, paste events, copy events, and suspicious timing.
+            Weak at directly seeing a hidden overlay, and it cannot prove every cheating method. Human review is required.
+          </p>
+        </div>
+
+        <div class="timeline-block">
+          <div class="timeline-header">
+            <h3>Evidence timeline</h3>
+            <span class="status subtle" id="timelineHint">Waiting for events</span>
+          </div>
+          <ul class="timeline" id="eventTimeline"></ul>
+        </div>
+
+        <div class="session-summary" id="sessionSummary">
+          No session yet. Start the demo to generate a reviewable report.
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
